@@ -44,10 +44,10 @@ class Player:
         self.x += c[0]
         self.y += c[1]
 
-    def move(self):
-        self.x += self.velocity[0]
-        self.y += self.velocity[1]
-        self.velocity[1] += self.gravity
+    def move(self, timeElapsed):
+        self.x += self.velocity[0] * timeElapsed
+        self.y += self.velocity[1] * timeElapsed
+        self.velocity[1] += self.gravity * timeElapsed
 
     def draw(self):
         if self.velocity[0] != 0:

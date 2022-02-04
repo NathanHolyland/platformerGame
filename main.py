@@ -6,6 +6,7 @@ from Vector import Vector2
 from Player import Player, load_images
 from Tiles import Brick
 from rectCollision import handleCollision
+import time
 
 root = tk.Tk()
 resolution = [root.winfo_screenwidth(), root.winfo_screenheight()]
@@ -72,8 +73,8 @@ def draw_level(bricks, flags, player):
     player.draw()
 
 
-def update_entities(player, enemies):
-    player.move()
+def update_entities(player, enemies, time_elapsed):
+    player.move(time_elapsed)
 
 
 def shift_level(map_velocity, flags, bricks, player):
@@ -94,9 +95,12 @@ def determineShift(events, screen_size, player):
 
 
 def main():
-    brick_list, enemy_list, player, finish_points = constructMap("Data/Level_Data/level3.json",
+    fps = 120
+    time_elapsed = 1/120
+
+    brick_list, enemy_list, player, finish_points = constructMap("Data/Level_Data/level1.json",
                                                                  "Textures/Brick.png", "Textures/TEST.png",
-                                                                 "Textures/Player/idle.png", 0.025)
+                                                                 "Textures/Player/idle.png", 240)
     events = {
         "Death": False,
         "Win": False,
@@ -104,13 +108,14 @@ def main():
     }
     running = True
     while running:
+        start_time = time.time()
         if events["Death"]:
             running = False
         screen.fill((255, 255, 255))
         draw_level(brick_list, finish_points, player)
         pygame.display.flip()
 
-        update_entities(player, None)
+        update_entities(player, None, time_elapsed)
         handle_collisions(events, player, brick_list, enemy_list, finish_points, resolution)
         map_velocity = determineShift(events, resolution, player)
         shift_level(map_velocity, finish_points, brick_list, player)
@@ -123,19 +128,22 @@ def main():
 
         if keys[pygame.K_a]:
             if keys[pygame.K_LSHIFT]:
-                player.velocity[0] = -2
+                player.velocity[0] = -240
             else:
-                player.velocity[0] = -1.5
+                player.velocity[0] = -150
 
         if keys[pygame.K_d]:
             if keys[pygame.K_LSHIFT]:
-                player.velocity[0] = 2
+                player.velocity[0] = 240
             else:
-                player.velocity[0] = 1.5
+                player.velocity[0] = 150
 
         if keys[pygame.K_w]:
             if player.onFloor:
-                player.velocity[1] = -3.2
+                if abs(player.velocity[0]) > 240:
+                    player.velocity[1] = -100
+                else:
+                    player.velocity[1] = -300
 
         if (not keys[pygame.K_a]) and (not keys[pygame.K_d]):
             player.velocity[0] = 0
@@ -143,6 +151,12 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        fps = 1/elapsed_time
+        print(fps)
+        #if 1/fps - elapsed_time > 0:
+        #    time.sleep(1/fps - elapsed_time)
 
     pygame.quit()
 
