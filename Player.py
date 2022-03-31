@@ -1,5 +1,4 @@
 import pygame
-import matplotlib.image as mpimg
 import os
 
 

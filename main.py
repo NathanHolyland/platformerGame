@@ -154,7 +154,6 @@ def main():
         end_time = time.time()
         elapsed_time = end_time - start_time
         fps = 1/elapsed_time
-        print(fps)
         #if 1/fps - elapsed_time > 0:
         #    time.sleep(1/fps - elapsed_time)
 
